@@ -1,0 +1,81 @@
+// Your old code in java8 has been preserved below.
+// /* 
+
+// n the pre-pandemic world (or when we get back in the office), we find it very challenging to find meeting rooms in our Twilio offices and we want to solve that problem. We have the data of bookings for each conference room. For the sake of this problem, we can assume that each meeting is one hour long. Each interval is one hour long. e.g. A session 2-10 consists of 8 meetings of one hour each. (2,3), (3,4) ........ (9,10)
+
+// Given this data (a set of booking timings across meeting rooms), find out the busiest hours of the day i.e when most the rooms are engaged concurrently. Find the top n busiest hours.  
+
+// sample data set:
+
+// room 1: 2-10
+// room 2: 3-15
+// room 3: 4-9
+// room 4: 8-14
+// room 5: 7-13
+// room 6: 5-10
+// room 7: 11-15
+
+// */
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    int rooms;
+    cin>> rooms;
+    int timeSlots[rooms][2];
+
+    int minTime= 10000;
+    int maxTime = -10000;
+    int roomNo = 0;
+    while(roomNo < rooms)
+    {
+        int startTime,endTime;
+        cout<<"Enter startTime and EndTime "<<roomNo<< " "<<rooms<<endl;
+        cin>>startTime>>endTime;
+        timeSlots[roomNo][0] = startTime;
+        timeSlots[roomNo][1] = endTime;
+        minTime = min(minTime,startTime);
+        maxTime = max(maxTime,endTime);
+        roomNo++;
+    }
+    map<pair<int,int>,int> topBusiest;
+    cout<<minTime<<" "<<maxTime<<endl;
+    for(int k = minTime;k<=maxTime-1;k++)
+    {
+        int startTime = k;
+        int endTime = k+1;
+        int numberOfBookings =0;
+        for(int i=0;i<rooms;i++)
+        {
+            cout<<timeSlots[i][0]<<"-->"<<startTime<<" "<<timeSlots[i][0]<<"-->"<<endTime<<endl;
+            if(timeSlots[i][0]<= startTime && timeSlots[i][0] < endTime)
+            {
+                numberOfBookings++;
+            }
+        }
+        pair<int,int> p;
+        // p.add(make_pair{startTime,endTime});
+        cout<<"booking done for " <<startTime << " "<<endTime<<" where bookings are "<<numberOfBookings<<endl;
+        topBusiest[make_pair(startTime,endTime)] = numberOfBookings;
+    }
+    map<int,vector<pair<int,int>>> bookingsPerTimeSlot;
+    for(int k = minTime;k<=maxTime-1;k++)
+    {
+        int startTime = k;
+        int endTime = k+1;
+        pair<int,int> p = make_pair(startTime, endTime);
+        int bookings= topBusiest[p];
+        bookingsPerTimeSlot[bookings].push_back(p);
+    }
+    
+    for(auto it = bookingsPerTimeSlot.rbegin();it!= bookingsPerTimeSlot.rend();it++)
+    {
+         cout << it->first<< "->"<<endl;
+         vector<pair<int,int>> childs = it->second;
+         for(auto child : childs)
+          cout<<" "<<child.first<< " "<<child.second<<endl;
+    }
+    return 0;
+}
